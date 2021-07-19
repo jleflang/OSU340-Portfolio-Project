@@ -17,13 +17,13 @@ app.set('view engine', 'handlebars');
 
 app.set('port', process.argv[2]);
 
-//app.use(express.static('static'));
+app.use(express.static('static'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/', function(req, res, next) {
     res.status(200);
-    res.render('home' {page_name: 'home'});
+    res.render('home', {page_name: 'home'});
 });
 
 app.use(function(req, res) {
