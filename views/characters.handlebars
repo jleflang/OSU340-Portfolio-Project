@@ -31,7 +31,7 @@
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipCheck" data-id="{{this.charaId}}">Check</button>
                     </td>
                     <td>{{#if this.available}}Yes{{else}}No{{/if}}</td>
-                    <td>{{> buttonCluster}}</td>
+                    <td>{{> buttonCluster uid=this.charaId}}</td>
                 </tr>
             {{/each}}
         </tbody>
