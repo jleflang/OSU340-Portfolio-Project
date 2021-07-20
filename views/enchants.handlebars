@@ -1,0 +1,26 @@
+<h2>Enchantments</h2>
+<div id="enchants">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Aura Color</th>
+                <th scope="col">Strength</th>
+                <th scope="col">Effect</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each rows}}
+                <tr>
+                    <td>{{this.enchantId}}</td>
+                    <td>{{this.enchantName}}</td>
+                    <td>{{this.auraColor}}</td>
+                    <td>{{this.strength}}</td>
+                    <td>{{this.effect}}</td>
+                    <td>{{this.available}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,27 @@
+<h2>Tools</h2>
+<div id="tools">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Material</th>
+                <th scope="col">Level</th>
+                <th scope="col">Enchantment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each rows}}
+                <tr>
+                    <td>{{this.toolId}}</td>
+                    <td>{{this.toolName}}</td>
+                    <td>{{this.type}}</td>
+                    <td>{{this.material}}</td>
+                    <td>{{this.level}}</td>
+                    <td>{{this.toolEnchant}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

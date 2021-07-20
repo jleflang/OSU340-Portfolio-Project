@@ -24,6 +24,22 @@ app.use(bodyParser.json());
 app.get('/', function(req, res, next) {
     res.status(200);
     res.render('home', {page_name: 'home'});
+})
+.get('/chars', function(req, res, next) {
+    res.status(200);
+    res.render('characters', {page_name: 'characters'});
+})
+.get('/equip', function(req, res, next) {
+    res.status(200);
+    res.render('equip', {page_name: 'equip'});
+})
+.get('/tools', function(req, res, next) {
+    res.status(200);
+    res.render('tools', {page_name: 'tools'});
+})
+.get('/enchants', function(req, res, next) {
+    res.status(200);
+    res.render('enchants', {page_name: 'enchants'});
 });
 
 app.use(function(req, res) {

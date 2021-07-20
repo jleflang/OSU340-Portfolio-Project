@@ -1,0 +1,33 @@
+:root {
+    /*
+        Found at
+        https://coolors.co/ffcdb2-ffb4a2-e5989b-b5838d-6d6875 
+    */
+    --apricot: #ffcdb2ff;
+    --melon: #ffb4a2ff;
+    --pastel-pink: #e5989bff;
+    --english-lavender: #b5838dff;
+    --old-lavender: #6d6875ff;
+}
+
+.navbar-dark {
+    background-color: var(--english-lavender);
+}
+
+body {
+    background-color: var(--old-lavender);
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    padding-top: 0.5rem;
+    background-color: var(--apricot);
+}
+
+.carousel-inner img {
+    max-height: 600px;
+}
+
