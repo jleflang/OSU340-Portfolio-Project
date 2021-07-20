@@ -26,20 +26,69 @@ app.get('/', function(req, res, next) {
     res.render('home', {page_name: 'home'});
 })
 .get('/chars', function(req, res, next) {
-    res.status(200);
-    res.render('characters', {page_name: 'characters'});
+    mysql.pool.query("SELECT characters.charaId,firstName,lastName,lifeStage,region,specialty,available FROM `characters`", 
+        function (error, result, fields) {
+            if (error) console.warn(error.sqlMessage);
+            res.status(200);
+            res.render('characters', {page_name: 'characters', rows: result});
+        }
+    );
 })
 .get('/equip', function(req, res, next) {
-    res.status(200);
-    res.render('equip', {page_name: 'equip'});
+    mysql.pool.query("SELECT * FROM `equips`",
+        function (error, result, fields) {
+            res.status(200);
+            res.render('equip', {page_name: 'equip', rows: result});
+        }
+    )
+    
 })
 .get('/tools', function(req, res, next) {
-    res.status(200);
-    res.render('tools', {page_name: 'tools'});
+    mysql.pool.query("SELECT * FROM `tools`",
+        function (error, result, fields) {
+            res.status(200);
+            res.render('tools', {page_name: 'tools', rows: result});
+        }
+    )
+    
 })
 .get('/enchants', function(req, res, next) {
-    res.status(200);
-    res.render('enchants', {page_name: 'enchants'});
+    mysql.pool.query("SELECT * FROM `enchants`",
+        function (error, result, fields) {
+            res.status(200);
+            res.render('enchants', {page_name: 'enchants', rows: result});
+        }
+    )
+    
+});
+
+app.get('/api', function(req, res, next) {
+    var id = req.query['id'];
+    var base = req.query['base'];
+
+    if (base == 0) {
+        mysql.pool.query("SELECT * FROM tools \
+        JOIN charTools ON charTools.toolID = tools.toolId \
+        LEFT JOIN characters ON charTools.charaID = characters.charaId \
+        WHERE characters.charaId = ?", [id], function (error, result, fields) {
+            if (error) console.warn(error.sqlMessage);
+
+            res.status(200);
+            res.send({rows: result});
+        });
+    } else if (base == 1) {
+        mysql.pool.query("SELECT * FROM equips \
+        JOIN charEquip ON charEquip.equipID = equips.equipId \
+        LEFT JOIN characters ON charEquip.charaID = characters.charaId \
+        WHERE characters.charaId = ?", [id], function (error, result, fields) {
+            if (error) console.warn(error.sqlMessage);
+
+            res.status(200);
+            res.send({rows: result});
+        });
+    } else {
+        console.warn("No id " + id);
+    }
 });
 
 app.use(function(req, res) {
