@@ -1,27 +1,29 @@
-<h2>Enchantments</h2>
-<div id="enchants">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Aura Color</th>
-                <th scope="col">Strength</th>
-                <th scope="col">Effect</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each rows}}
+<div class="container-fluid">
+    <h2>Enchantments</h2>
+    <div id="enchants" class="mt-2">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>{{this.enchantId}}</td>
-                    <td>{{this.enchantName}}</td>
-                    <td>{{this.auraColor}}</td>
-                    <td>{{this.strength}}</td>
-                    <td>{{this.effect}}</td>
-                    <td>{{> buttonCluster uid=this.charaId}}</td>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Aura Color</th>
+                    <th scope="col">Strength</th>
+                    <th scope="col">Effect</th>
+                    <th scope="col"></th>
                 </tr>
-            {{/each}}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {{#each rows}}
+                    <tr>
+                        <td>{{this.enchantId}}</td>
+                        <td>{{this.enchantName}}</td>
+                        <td>{{this.auraColor}}</td>
+                        <td>{{this.strength}}</td>
+                        <td>{{this.effect}}</td>
+                        <td>{{> buttonCluster uid=this.charaId}}</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
 </div>

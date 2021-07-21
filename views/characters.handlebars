@@ -1,74 +1,76 @@
-<h2>Characters</h2>
-<div id="chars">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">First Name</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">Life Stage</th>
-                <th scope="col">Region</th>
-                <th scope="col">Specialty</th>
-                <th scope="col">Tool</th>
-                <th scope="col">Equipment</th>
-                <th scope="col">Available</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each rows}}
+<div class="container-fluid">
+    <h2>Characters</h2>
+    <div id="chars" class="mt-2">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>{{this.charaId}}</td>
-                    <td>{{this.firstName}}</td>
-                    <td>{{this.lastName}}</td>
-                    <td>{{this.lifeStage}}</td>
-                    <td>{{this.region}}</td>
-                    <td>{{this.specialty}}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#toolCheck" data-id="{{this.charaId}}">Check</button>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipCheck" data-id="{{this.charaId}}">Check</button>
-                    </td>
-                    <td>{{#if this.available}}Yes{{else}}No{{/if}}</td>
-                    <td>{{> buttonCluster uid=this.charaId}}</td>
+                    <th scope="col">ID</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Life Stage</th>
+                    <th scope="col">Region</th>
+                    <th scope="col">Specialty</th>
+                    <th scope="col">Tool</th>
+                    <th scope="col">Equipment</th>
+                    <th scope="col">Available</th>
+                    <th scope="col"></th>
                 </tr>
-            {{/each}}
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                {{#each rows}}
+                    <tr>
+                        <td>{{this.charaId}}</td>
+                        <td>{{this.firstName}}</td>
+                        <td>{{this.lastName}}</td>
+                        <td>{{this.lifeStage}}</td>
+                        <td>{{this.region}}</td>
+                        <td>{{this.specialty}}</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#toolCheck" data-id="{{this.charaId}}">Check</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipCheck" data-id="{{this.charaId}}">Check</button>
+                        </td>
+                        <td>{{#if this.available}}Yes{{else}}No{{/if}}</td>
+                        <td>{{> buttonCluster uid=this.charaId}}</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
 
-<div class="modal fade" id="toolCheck" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="toolCheck" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Tools</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="toolsModalTable"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Understood</button>
+    <div class="modal fade" id="toolCheck" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="toolCheck" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Tools</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="toolsModalTable"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="equipCheck" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="equipCheck" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Equipment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="equipModalTable"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Understood</button>
+    <div class="modal fade" id="equipCheck" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="equipCheck" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Equipment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="equipModalTable"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                </div>
             </div>
         </div>
     </div>
