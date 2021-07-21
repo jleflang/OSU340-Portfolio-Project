@@ -1,3 +1,5 @@
+feather.replace();
+
 $('#toolCheck').on('show.bs.modal', function (event) {
     var req = new XMLHttpRequest();
 
