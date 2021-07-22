@@ -1,8 +1,8 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var mysql = require('./dbcon.js');
+const express = require('express');
+const bodyParser = require('body-parser');
+const mysql = require('./dbcon.js');
 
-var handlebars = require('express-handlebars').create({defaultLayout:'main',
+const handlebars = require('express-handlebars').create({defaultLayout:'main',
         helpers: {
             ismatch: function(value, page) {
                 return value == page ? true : false;

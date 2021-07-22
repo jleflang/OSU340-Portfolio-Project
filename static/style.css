@@ -27,7 +27,7 @@ body {
     background-color: var(--old-lavender);
 }
 
-.footer {
+footer {
     background-color: var(--pastel-pink);
 }
 
@@ -35,6 +35,6 @@ footer > div > p {
     color: var(--old-lavender);
 }
 
-.carousel-inner img {
-    max-height: 600px;
+.img-fluid {
+    max-height: 500px;
 }
