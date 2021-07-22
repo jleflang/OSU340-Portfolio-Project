@@ -37,7 +37,7 @@ $('#toolCheck').on('show.bs.modal', function (event) {
         $('#toolsModalTable').append(table);
 
     });
-}).on('hide.bs.modal', function (event) {
+}).on('hidden.bs.modal', function (event) {
     $('#toolsModalTable').children('table').remove();
 });
 
@@ -77,6 +77,6 @@ $('#equipCheck').on('show.bs.modal', function (event) {
 
         $('#equipModalTable').append(table);
     });
-}).on('hide.bs.modal', function (event) {
+}).on('hidden.bs.modal', function (event) {
     $('#equipModalTable').children('table').remove();
 });
