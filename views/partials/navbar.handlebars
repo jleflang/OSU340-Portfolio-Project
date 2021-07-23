@@ -1,26 +1,26 @@
 <header role="navigation">
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Creekside Dreamers</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-brand mb-0 h1">Creekside Dreamers</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link {{#if (ismatch page_name "home")}}active{{/if}}" href="/">Home</a>
+                        <a class="nav-link{{#if active.home}} active" aria-current="page{{/if}}" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{#if (ismatch page_name "characters")}}active{{/if}}" href="/chars">Characters</a>
+                        <a class="nav-link{{#if active.chars}} active" aria-current="page{{/if}}" href="/chars">Characters</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{#if (ismatch page_name "equip")}}active{{/if}}" href="/equip">Equipment</a>
+                        <a class="nav-link{{#if active.equip}} active" aria-current="page{{/if}}" href="/equip">Equipment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{#if (ismatch page_name "tools")}}active{{/if}}" href="/tools">Tools</a>
+                        <a class="nav-link{{#if active.tools}} active" aria-current="page{{/if}}" href="/tools">Tools</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{#if (ismatch page_name "enchants")}}active{{/if}}" href="/enchants">Enchantments</a>
+                        <a class="nav-link{{#if active.enchants}} active" aria-current="page{{/if}}" href="/enchants">Enchantments</a>
                     </li>
                 </ul>
             </div>

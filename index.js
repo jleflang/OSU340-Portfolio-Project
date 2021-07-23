@@ -2,13 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('./dbcon.js');
 
-const handlebars = require('express-handlebars').create({defaultLayout:'main',
-        helpers: {
-            ismatch: function(value, page) {
-                return value == page ? true : false;
-            }
-        }
-});
+const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 
 var app = express();
 
@@ -21,16 +15,24 @@ app.use(express.static('static'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+/*
+    Setting the Navbar Active class in Bootstrap with Handlebars clashes and doesn't work as intended
+    even with JQuery since Handlebars gets the last laugh a.k.a. overrides all JS behaviors in partials, 
+    so
+    https://stackoverflow.com/questions/17050253/set-navigation-menu-item-active-in-handlebars-partial
+    is the only way that makes sense without registering a helper for Handlebars (also a pain).
+*/
+
 app.get('/', function(req, res, next) {
     res.status(200);
-    res.render('home', {page_name: 'home'});
+    res.render('home', {active: {'home': true}});
 })
 .get('/chars', function(req, res, next) {
     mysql.pool.query("SELECT characters.charaId,firstName,lastName,lifeStage,region,specialty,available FROM `characters`", 
         function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
             res.status(200);
-            res.render('characters', {page_name: 'characters', rows: result});
+            res.render('characters', {active: {'chars': true}, rows: result});
         }
     );
 })
@@ -38,7 +40,7 @@ app.get('/', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `equips`",
         function (error, result, fields) {
             res.status(200);
-            res.render('equip', {page_name: 'equip', rows: result});
+            res.render('equip', {active: {'equip': true}, rows: result});
         }
     )
     
@@ -47,7 +49,7 @@ app.get('/', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `tools`",
         function (error, result, fields) {
             res.status(200);
-            res.render('tools', {page_name: 'tools', rows: result});
+            res.render('tools', {active: {'tools': true}, rows: result});
         }
     )
     
@@ -56,7 +58,7 @@ app.get('/', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `enchants`",
         function (error, result, fields) {
             res.status(200);
-            res.render('enchants', {page_name: 'enchants', rows: result});
+            res.render('enchants', {active: {'enchants': true}, rows: result});
         }
     )
     
