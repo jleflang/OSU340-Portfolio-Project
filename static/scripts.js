@@ -1,9 +1,11 @@
 feather.replace();
 
-$('#toolCheck').on('show.bs.modal', function (event) {
+var toolModal = document.getElementById('toolCheck');
+
+toolModal.addEventListener('show.bs.modal', function (event) {
     var req = new XMLHttpRequest();
 
-    let uid = $(event.relatedTarget).data('id');
+    let uid = event.relatedTarget.id;
 
     req.open("GET", '/api?id=' + uid + '&base=0');
     req.send(null);
@@ -13,37 +15,57 @@ $('#toolCheck').on('show.bs.modal', function (event) {
         let response = JSON.parse(req.responseText);
         let head = ['Name', 'Type', 'Material', 'Level', 'Enchantment'];
 
-        var table = $('<table>').addClass('table');
-        var header = $('<thead>');
+        var table = document.createElement('table');
+        table.setAttribute('class', 'table');
+
+        var header = document.createElement('thead');
         
         head.forEach(label => {
-            let h = $('<th>' + label + '</th>').attr('scope', 'col');
+            let h = document.createElement('th')
+            h.setAttribute('scope', 'col');
+            h.innerText = label;
             header.append(h);
         });
 
         table.append(header);
 
         response.rows.forEach(tool => {
-            table.append(
-                '<tr><td>' + tool.toolName + '</td>' +
-                '<td>' + tool.type + '</td>' +
-                '<td>' + tool.material + '</td>' +
-                '<td>' + tool.level + '</td>' +
-                '<td>' + tool.toolEnchant + '</td></tr>'
-            );
+            let row = document.createElement('tr');
+
+            var data = document.createElement('td');
+            data.innerText = tool.toolName;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = tool.type;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = tool.material;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = tool.level;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = tool.toolEnchant;
+            row.appendChild(data);
+
+            table.append(row);
         });
 
-        $('#toolsModalTable').append(table);
+        document.getElementById('toolsModalTable').append(table);
 
     });
-}).on('hidden.bs.modal', function (event) {
-    $('#toolsModalTable').children('table').remove();
 });
 
-$('#equipCheck').on('show.bs.modal', function (event) {
+toolModal.addEventListener('hidden.bs.modal', function (event) {
+    document.getElementById('toolsModalTable').firstChild.remove();
+});
+
+var equipModal = document.getElementById('equipCheck');
+
+equipModal.addEventListener('show.bs.modal', function (event) {
     var req = new XMLHttpRequest();
 
-    let uid = $(event.relatedTarget).data('id');
+    let uid = event.relatedTarget.id;
 
     req.open("GET", '/api?id=' + uid + '&base=1');
     req.send(null);
@@ -52,29 +74,49 @@ $('#equipCheck').on('show.bs.modal', function (event) {
         let response = JSON.parse(req.responseText);
         let head = ['Name', 'Equipable Location', 'Weight', 'Material', 'Level', 'Enchantment'];
 
-        var table = $('<table>').addClass('table');
-        var header = $('<thead>');
+        var table = document.createElement('table');
+        table.setAttribute('class', 'table');
+
+        var header = document.createElement('thead');
         
         head.forEach(label => {
-            let h = $('<th>' + label + '</th>').attr('scope', 'col');
+            let h = document.createElement('th')
+            h.setAttribute('scope', 'col');
+            h.innerText = label;
             header.append(h);
         });
 
         table.append(header);
 
-        response.rows.forEach(tool => {
-            table.append(
-                '<tr><td>' + tool.equipName + '</td>' +
-                '<td>' + tool.location + '</td>' +
-                '<td>' + tool.weight + '</td>' +
-                '<td>' + tool.material + '</td>' +
-                '<td>' + tool.level + '</td>' +
-                '<td>' + tool.equipEnchant + '</td></tr>'
-            );
+        response.rows.forEach(equip => {
+            let row = document.createElement('tr');
+
+            var data = document.createElement('td');
+            data.innerText = equip.equipName;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = equip.location;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = equip.weight;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = equip.material;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = equip.level;
+            row.appendChild(data);
+            var data = document.createElement('td');
+            data.innerText = equip.equipEnchant;
+            row.appendChild(data);
+
+            table.append(row);
         });
 
-        $('#equipModalTable').append(table);
+        document.getElementById('equipModalTable').append(table);
     });
-}).on('hidden.bs.modal', function (event) {
-    $('#equipModalTable').children('table').remove();
+});
+
+equipModal.addEventListener('hidden.bs.modal', function (event) {
+    document.getElementById('equipModalTable').firstChild.remove();
 });

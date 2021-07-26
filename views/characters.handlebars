@@ -24,10 +24,10 @@
                         <td>{{this.region}}</td>
                         <td>{{this.specialty}}</td>
                         <td>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#toolCheck" data-id="{{this.charaId}}"><i data-feather="tag" aria-label="Check"></i></button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#toolCheck" id="{{this.charaId}}"><i data-feather="tag" aria-label="Check"></i></button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipCheck" data-id="{{this.charaId}}"><i data-feather="tag" aria-label="Check"></i></button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipCheck" id="{{this.charaId}}"><i data-feather="tag" aria-label="Check"></i></button>
                         </td>
                         <td>{{#if this.available}}Yes{{else}}No{{/if}}</td>
                         <td>{{> buttonCluster uid=this.charaId}}</td>
