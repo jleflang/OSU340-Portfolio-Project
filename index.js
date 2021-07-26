@@ -28,7 +28,7 @@ app.get('/', function(req, res, next) {
     res.render('home', {active: {'home': true}});
 })
 .get('/chars', function(req, res, next) {
-    mysql.pool.query("SELECT characters.charaId,firstName,lastName,lifeStage,region,specialty,available FROM `characters`", 
+    mysql.pool.query("SELECT * FROM `characters`", 
         function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
             res.status(200);
@@ -71,7 +71,7 @@ app.get('/api', function(req, res, next) {
     if (base == 0) {
         mysql.pool.query("SELECT * FROM tools \
         JOIN charTools ON charTools.toolID = tools.toolId \
-        LEFT JOIN characters ON charTools.charaID = characters.charaId \
+        JOIN characters ON charTools.charaID = characters.charaId \
         WHERE characters.charaId = ?", [id], function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
 
@@ -81,7 +81,7 @@ app.get('/api', function(req, res, next) {
     } else if (base == 1) {
         mysql.pool.query("SELECT * FROM equips \
         JOIN charEquip ON charEquip.equipID = equips.equipId \
-        LEFT JOIN characters ON charEquip.charaID = characters.charaId \
+        JOIN characters ON charEquip.charaID = characters.charaId \
         WHERE characters.charaId = ?", [id], function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
 

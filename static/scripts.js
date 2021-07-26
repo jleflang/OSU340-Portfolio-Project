@@ -11,7 +11,7 @@ $('#toolCheck').on('show.bs.modal', function (event) {
     req.addEventListener('load', function() {
 
         let response = JSON.parse(req.responseText);
-        let head = ['ID', 'Name', 'Type', 'Material', 'Level', 'Enchantment'];
+        let head = ['Name', 'Type', 'Material', 'Level', 'Enchantment'];
 
         var table = $('<table>').addClass('table');
         var header = $('<thead>');
@@ -25,8 +25,7 @@ $('#toolCheck').on('show.bs.modal', function (event) {
 
         response.rows.forEach(tool => {
             table.append(
-                '<tr><td>' + tool.toolId + '</td>' +
-                '<td>' + tool.toolName + '</td>' +
+                '<tr><td>' + tool.toolName + '</td>' +
                 '<td>' + tool.type + '</td>' +
                 '<td>' + tool.material + '</td>' +
                 '<td>' + tool.level + '</td>' +
@@ -51,7 +50,7 @@ $('#equipCheck').on('show.bs.modal', function (event) {
 
     req.addEventListener('load', function() {
         let response = JSON.parse(req.responseText);
-        let head = ['ID', 'Name', 'Equipable Location', 'Weight', 'Material', 'Level', 'Enchantment'];
+        let head = ['Name', 'Equipable Location', 'Weight', 'Material', 'Level', 'Enchantment'];
 
         var table = $('<table>').addClass('table');
         var header = $('<thead>');
@@ -65,8 +64,7 @@ $('#equipCheck').on('show.bs.modal', function (event) {
 
         response.rows.forEach(tool => {
             table.append(
-                '<tr><td>' + tool.equipId + '</td>' +
-                '<td>' + tool.equipName + '</td>' +
+                '<tr><td>' + tool.equipName + '</td>' +
                 '<td>' + tool.location + '</td>' +
                 '<td>' + tool.weight + '</td>' +
                 '<td>' + tool.material + '</td>' +
