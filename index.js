@@ -36,6 +36,10 @@ app.get('/', function(req, res, next) {
         }
     );
 })
+.get('/chars/add', function(req, res, next) {
+    res.status(200);
+    res.render('addChar', {active: {'chars': true}})
+})
 .get('/equip', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `equips`",
         function (error, result, fields) {
@@ -44,6 +48,10 @@ app.get('/', function(req, res, next) {
         }
     )
     
+})
+.get('/equip/add', function(req, res, next) {
+    res.status(200);
+    res.render('addEquip', {active: {'equip': true}})
 })
 .get('/tools', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `tools`",
@@ -54,6 +62,10 @@ app.get('/', function(req, res, next) {
     )
     
 })
+.get('/tool/add', function(req, res, next) {
+    res.status(200);
+    res.render('addTool', {active: {'tools': true}})
+})
 .get('/enchants', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `enchants`",
         function (error, result, fields) {
@@ -62,7 +74,12 @@ app.get('/', function(req, res, next) {
         }
     )
     
-});
+})
+.get('/enchant/add', function(req, res, next) {
+    res.status(200);
+    res.render('addEnchant', {active: {'enchants': true}})
+})
+;
 
 app.get('/api', function(req, res, next) {
     var id = req.query['id'];
@@ -91,6 +108,25 @@ app.get('/api', function(req, res, next) {
     } else {
         console.warn("No id " + id);
     }
+})
+.post('/api/:base', function(req, res, next) {
+    var base = req.params.base;
+
+    if (base == 'chars') {
+        mysql.pool.query("INSERT INTO `characters` \
+        (`firstName`,`lastName`,`lifeStage`,`region`,`specialty`,`available`) VALUES (?,?,?,?,?,1)", 
+        [req.body.first, req.body.last, req.body.ls, req.body.region, req.body.special], 
+        function(err, result, fields) {
+            if (err) {
+                console.warn(err.sqlMessage);
+                res.status(400);
+            }
+            res.status(201);
+            res.send(null);
+        });
+    }
+    
+
 });
 
 app.use(function(req, res) {

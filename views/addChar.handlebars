@@ -1,0 +1,85 @@
+<div class="container-fluid">
+    <nav class="mt-2" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/chars">Characters</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add</li>
+        </ol>
+    </nav>
+    <h1>Add a Character</h1>
+    <form id="addChar" class="container-sm needs-validation">
+        <div class="row mb-3 justify-content-left">
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="First name" id="charFirst" onsubmit="checkName(this)" aria-label="First name" required aria-required="true">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Last name" id="charLast" onsubmit="checkName(this)"  aria-label="Last name" required aria-required="true">
+            </div>
+        </div>
+        <div class="row mb-3 justify-content-left">
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Life Stage" id="lifeStage" onsubmit="checkName(this)" aria-label="Life stage">
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" placeholder="Region" id="region" onsubmit="checkName(this)" aria-label="Region" required aria-required="true">
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" placeholder="Specialty" id="specialty" onsubmit="checkName(this)" aria-label="Specialty">
+            </div>
+        </div>
+        <div class="row justify-content-left">
+            <div class="col-4">
+                <button type="submit" id="submitChar" class="btn btn-primary">Add Character</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    var formSubmit = document.getElementById('addChar');
+
+    formSubmit.addEventListener('submit', function(event) {
+
+        event.preventDefault();
+
+        let buttonSubmit = document.getElementById('submitChar');
+
+        buttonSubmit.classList.replace('btn-primary', 'btn-secondary');
+        buttonSubmit.innerHTML = '<span class=\'spinner-border spinner-border-sm\'></span>';
+        buttonSubmit.innerText = 'Processing...';
+
+        var req = new XMLHttpRequest();
+
+        let first = formSubmit.elements['charFirst'].value;
+        let last = formSubmit.elements['charLast'].value;
+        let ls = formSubmit.elements['lifeStage'].value;
+        let reg = formSubmit.elements['region'].value;
+        let sp = formSubmit.elements['specialty'].value;
+
+        var request = {
+            'first': first, 
+            'last': last, 
+            'ls': ls, 
+            'region': reg, 
+            'special': sp
+        };
+
+        req.open('POST', '/api/chars');
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.send(JSON.stringify(request));
+
+        req.addEventListener('load', function() {
+            if (req.status == 201) {
+                setTimeout(() => { window.location.href = "/chars"; }, 2500);
+                buttonSubmit.classList.replace('btn-secondary', 'btn-success');
+                buttonSubmit.innerText = 'Added!';
+            } else if (req.status == 400) {
+                setTimeout(() => { window.location.href = "/chars"; }, 2500);
+                buttonSubmit.classList.replace('btn-primary', 'btn-danger');
+                buttonSubmit.innerText = 'Error!';
+                console.warn("Failed to Add!");
+            } else {
+                console.error("Unknown State!");
+            }
+        });
+    });
+</script>
