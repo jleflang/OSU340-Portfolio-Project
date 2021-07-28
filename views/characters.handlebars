@@ -1,7 +1,8 @@
 <div class="container-fluid">
     <h2>View Characters</h2>
-    <div class="container-fluid">
-        <a role="button" class="btn btn-primary" href="/chars/add">Add Character</a>
+    <div class="clearfix">
+        <a role="button" class="btn btn-primary float-start" href="/chars/add">Add Character</a>
+        <a role="button" class="btn btn-primary float-end" aria-label="Search"><i data-feather="search"></i>Search</a>
     </div>
     <div id="chars" class="table-responsive mt-2">
         <table class="table">
@@ -83,7 +84,8 @@
 
         let uid = event.relatedTarget.id;
 
-        req.open("GET", '/api?id=' + uid + '&base=0');
+        req.open("GET", '/api/tool?id=' + uid);
+        req.setRequestHeader('Accept', 'application/json; charset=utf-8');
         req.send(null);
 
         req.addEventListener('load', function() {
@@ -121,7 +123,7 @@
                 data.innerText = tool.level;
                 row.appendChild(data);
                 var data = document.createElement('td');
-                data.innerText = tool.toolEnchant;
+                data.innerText = tool.enchantName;
                 row.appendChild(data);
 
                 table.append(row);
@@ -143,7 +145,8 @@
 
         let uid = event.relatedTarget.id;
 
-        req.open("GET", '/api?id=' + uid + '&base=1');
+        req.open("GET", '/api/equip?id=' + uid);
+        req.setRequestHeader('Accept', 'application/json; charset=utf-8');
         req.send(null);
 
         req.addEventListener('load', function() {
@@ -183,7 +186,7 @@
                 data.innerText = equip.level;
                 row.appendChild(data);
                 var data = document.createElement('td');
-                data.innerText = equip.equipEnchant;
+                data.innerText = equip.enchantName;
                 row.appendChild(data);
 
                 table.append(row);
