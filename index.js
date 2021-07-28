@@ -1,17 +1,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('./dbcon.js');
+const helmet = require('helmet');
 
 const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 
 var app = express();
+
+app.use(helmet());
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 app.set('port', process.argv[2]);
 
-app.use(express.static('static'));
+app.use(express.static('static', {
+    setHeaders: function(res, path, stat) {
+        res.set('Cache-Control', 'max-age=31536000, immutable');
+    }
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -81,28 +88,32 @@ app.get('/', function(req, res, next) {
 })
 ;
 
-app.get('/api', function(req, res, next) {
+app.get('/api/:base', function(req, res, next) {
     var id = req.query['id'];
-    var base = req.query['base'];
+    var base = req.params.base;
 
-    if (base == 0) {
-        mysql.pool.query("SELECT * FROM tools \
+    if (base == "tool") {
+        mysql.pool.query("SELECT toolName,type,material,level,`enchants`.enchantName AS enchantName FROM tools \
         JOIN charTools ON charTools.toolID = tools.toolId \
         JOIN characters ON charTools.charaID = characters.charaId \
+        JOIN enchants ON tools.toolEnchant = enchants.enchantId \
         WHERE characters.charaId = ?", [id], function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
 
             res.status(200);
+            res.setHeader('Content-Type', 'application/json');
             res.send({rows: result});
         });
-    } else if (base == 1) {
-        mysql.pool.query("SELECT * FROM equips \
+    } else if (base == "equip") {
+        mysql.pool.query("SELECT equipName,location,weight,material,level,`enchants`.enchantName AS enchantName FROM equips \
         JOIN charEquip ON charEquip.equipID = equips.equipId \
         JOIN characters ON charEquip.charaID = characters.charaId \
+        JOIN enchants ON equips.enchantID = enchants.enchantId \
         WHERE characters.charaId = ?", [id], function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
 
             res.status(200);
+            res.setHeader('Content-Type', 'application/json');
             res.send({rows: result});
         });
     } else {
@@ -120,12 +131,51 @@ app.get('/api', function(req, res, next) {
             if (err) {
                 console.warn(err.sqlMessage);
                 res.status(400);
+                res.send(null);
+            }
+            res.status(201);
+            res.send(null);
+        });
+    } else if (base == 'tool') {
+        mysql.pool.query("INSERT INTO `tools` \
+        (`toolName`,`type`,`material`,`level`) VALUES (?,?,?,?)", 
+        [req.body.tool, req.body.type, req.body.mat, req.body.lv], 
+        function(err, result, fields) {
+            if (err) {
+                console.warn(err.sqlMessage);
+                res.status(400);
+                res.send(null);
+            }
+            res.status(201);
+            res.send(null);
+        });
+    } else if (base == 'equip') {
+        mysql.pool.query("INSERT INTO `equips` \
+        (`equipName`,`type`, `weight`,`material`,`level`) VALUES (?,?,?,?,?)", 
+        [req.body.equip, req.body.type, req.body.weight, req.body.mat, req.body.lv], 
+        function(err, result, fields) {
+            if (err) {
+                console.warn(err.sqlMessage);
+                res.status(400);
+                res.send(null);
+            }
+            res.status(201);
+            res.send(null);
+        });
+    } else if (base == 'enchant') {
+        mysql.pool.query("INSERT INTO `enchants` \
+        (`enchantName`,`auraColor`,`strength`,`effect`) VALUES (?,?,?,?)", 
+        [req.body.enchant, req.body.color, req.body.str, req.body.eff], 
+        function(err, result, fields) {
+            if (err) {
+                console.warn(err.sqlMessage);
+                res.status(400);
+                res.send(null);
             }
             res.status(201);
             res.send(null);
         });
     }
-    
 
 });
 

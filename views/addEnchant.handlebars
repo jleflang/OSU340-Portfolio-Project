@@ -30,3 +30,51 @@
         </div>
     </form>
 </div>
+
+<script>
+    var formSubmit = document.getElementById('addEnch');
+
+    formSubmit.addEventListener('submit', function(event) {
+
+        event.preventDefault();
+
+        let buttonSubmit = document.getElementById('submitEnchant');
+
+        buttonSubmit.classList.replace('btn-primary', 'btn-secondary');
+        buttonSubmit.innerHTML = '<span class=\'spinner-border spinner-border-sm\'></span>';
+        buttonSubmit.innerText = 'Processing...';
+
+        var req = new XMLHttpRequest();
+
+        let ench = formSubmit.elements['name'].value;
+        let aura = formSubmit.elements['aura'].value;
+        let str = formSubmit.elements['strength'].value;
+        let eff = formSubmit.elements['eff'].value;
+
+        var request = {
+            'equip': ench, 
+            'color': aura,
+            'str': w, 
+            'eff': eff
+        };
+
+        req.open('POST', '/api/enchant');
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.send(JSON.stringify(request));
+
+        req.addEventListener('load', function() {
+            if (req.status == 201) {
+                setTimeout(() => { window.location.href = "/enchants"; }, 2500);
+                buttonSubmit.classList.replace('btn-secondary', 'btn-success');
+                buttonSubmit.innerText = 'Added!';
+            } else if (req.status == 400) {
+                setTimeout(() => { window.location.href = "/enchants"; }, 2500);
+                buttonSubmit.classList.replace('btn-primary', 'btn-danger');
+                buttonSubmit.innerText = 'Error!';
+                console.warn("Failed to Add!");
+            } else {
+                console.error("Unknown State!");
+            }
+        });
+    });
+</script>

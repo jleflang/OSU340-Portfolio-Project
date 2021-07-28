@@ -33,3 +33,53 @@
         </div>
     </form>
 </div>
+
+<script>
+    var formSubmit = document.getElementById('addTool');
+
+    formSubmit.addEventListener('submit', function(event) {
+
+        event.preventDefault();
+
+        let buttonSubmit = document.getElementById('submitTool');
+
+        buttonSubmit.classList.replace('btn-primary', 'btn-secondary');
+        buttonSubmit.innerHTML = '<span class=\'spinner-border spinner-border-sm\'></span>';
+        buttonSubmit.innerText = 'Processing...';
+
+        var req = new XMLHttpRequest();
+
+        let tool = formSubmit.elements['name'].value;
+        let typ = formSubmit.elements['typ'].value;
+        let mat = formSubmit.elements['mat'].value;
+        let lv = formSubmit.elements['lvl'].value;
+        let eid = formSubmit.elements['enchant'].value;
+
+        var request = {
+            'first': first, 
+            'type': typ, 
+            'mat': mat, 
+            'lv': lv, 
+            'eid': eid
+        };
+
+        req.open('POST', '/api/tool');
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.send(JSON.stringify(request));
+
+        req.addEventListener('load', function() {
+            if (req.status == 201) {
+                setTimeout(() => { window.location.href = "/tools"; }, 2500);
+                buttonSubmit.classList.replace('btn-secondary', 'btn-success');
+                buttonSubmit.innerText = 'Added!';
+            } else if (req.status == 400) {
+                setTimeout(() => { window.location.href = "/tools"; }, 2500);
+                buttonSubmit.classList.replace('btn-primary', 'btn-danger');
+                buttonSubmit.innerText = 'Error!';
+                console.warn("Failed to Add!");
+            } else {
+                console.error("Unknown State!");
+            }
+        });
+    });
+</script>
