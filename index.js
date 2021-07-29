@@ -7,7 +7,18 @@ const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 
 var app = express();
 
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+            "frame-ancestors": ["'self'"],
+            "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            "style-src": ["'self'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+            "font-src": ["'self'", "*.gstatic.com"]
+        }
+    },
+    framegaurd: false
+}));
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
@@ -15,9 +26,8 @@ app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
 
 app.use(express.static('static', {
-    setHeaders: function(res, path, stat) {
-        res.set('Cache-Control', 'max-age=31536000, immutable');
-    }
+    immutable: true,
+    maxAge: '31536000000'
 }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -32,6 +42,7 @@ app.use(bodyParser.json());
 
 app.get('/', function(req, res, next) {
     res.status(200);
+    res.setHeader('Cache-Control', 'no-cache');
     res.render('home', {active: {'home': true}});
 })
 .get('/chars', function(req, res, next) {
@@ -39,18 +50,22 @@ app.get('/', function(req, res, next) {
         function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
             res.status(200);
+            res.setHeader('Cache-Control', 'no-cache');
             res.render('characters', {active: {'chars': true}, rows: result});
         }
     );
 })
 .get('/chars/add', function(req, res, next) {
     res.status(200);
+    res.setHeader('Cache-Control', 'no-cache');
     res.render('addChar', {active: {'chars': true}})
 })
 .get('/equip', function(req, res, next) {
-    mysql.pool.query("SELECT * FROM `equips`",
+    mysql.pool.query("SELECT equipId,equipName,location,weight,material,level,`enchants`.enchantName AS enchantName FROM `equips` \
+    JOIN enchants ON `equips`.enchantID = `enchants`.enchantId",
         function (error, result, fields) {
             res.status(200);
+            res.setHeader('Cache-Control', 'no-cache');
             res.render('equip', {active: {'equip': true}, rows: result});
         }
     )
@@ -58,12 +73,15 @@ app.get('/', function(req, res, next) {
 })
 .get('/equip/add', function(req, res, next) {
     res.status(200);
+    res.setHeader('Cache-Control', 'no-cache');
     res.render('addEquip', {active: {'equip': true}})
 })
 .get('/tools', function(req, res, next) {
-    mysql.pool.query("SELECT * FROM `tools`",
+    mysql.pool.query("SELECT toolId,toolName,`type`,material,level,`enchants`.enchantName AS enchantName FROM `tools` \
+    JOIN enchants ON `tools`.toolEnchant = `enchants`.enchantId",
         function (error, result, fields) {
             res.status(200);
+            res.setHeader('Cache-Control', 'no-cache');
             res.render('tools', {active: {'tools': true}, rows: result});
         }
     )
@@ -71,12 +89,14 @@ app.get('/', function(req, res, next) {
 })
 .get('/tool/add', function(req, res, next) {
     res.status(200);
+    res.setHeader('Cache-Control', 'no-cache');
     res.render('addTool', {active: {'tools': true}})
 })
 .get('/enchants', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `enchants`",
         function (error, result, fields) {
             res.status(200);
+            res.setHeader('Cache-Control', 'no-cache');
             res.render('enchants', {active: {'enchants': true}, rows: result});
         }
     )
@@ -84,6 +104,7 @@ app.get('/', function(req, res, next) {
 })
 .get('/enchant/add', function(req, res, next) {
     res.status(200);
+    res.setHeader('Cache-Control', 'no-cache');
     res.render('addEnchant', {active: {'enchants': true}})
 })
 ;
@@ -101,6 +122,7 @@ app.get('/api/:base', function(req, res, next) {
             if (error) console.warn(error.sqlMessage);
 
             res.status(200);
+            res.setHeader('Cache-Control', 'no-cache');
             res.setHeader('Content-Type', 'application/json');
             res.send({rows: result});
         });
@@ -113,6 +135,7 @@ app.get('/api/:base', function(req, res, next) {
             if (error) console.warn(error.sqlMessage);
 
             res.status(200);
+            res.setHeader('Cache-Control', 'no-cache');
             res.setHeader('Content-Type', 'application/json');
             res.send({rows: result});
         });
@@ -134,6 +157,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
+            res.setHeader('Cache-Control', 'no-cache');
             res.send(null);
         });
     } else if (base == 'tool') {
@@ -147,6 +171,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
+            res.setHeader('Cache-Control', 'no-cache');
             res.send(null);
         });
     } else if (base == 'equip') {
@@ -160,6 +185,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
+            res.setHeader('Cache-Control', 'no-cache');
             res.send(null);
         });
     } else if (base == 'enchant') {
@@ -173,6 +199,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
+            res.setHeader('Cache-Control', 'no-cache');
             res.send(null);
         });
     }

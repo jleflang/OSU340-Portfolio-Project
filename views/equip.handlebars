@@ -25,11 +25,62 @@
                         <td>{{this.weight}}</td>
                         <td>{{this.material}}</td>
                         <td>{{this.level}}</td>
-                        <td>{{this.enchantID}}</td>
-                        <td>{{> buttonCluster uid=this.charaId}}</td>
+                        <td>{{this.enchantName}}</td>
+                        <td>{{> buttonCluster uid=this.equipId fname=this.equipName lname=''}}</td>
                     </tr>
                 {{/each}}
             </tbody>
         </table>
     </div>
+
+    <div class="modal fade" id="deleteVerify" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="equipCheck" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Are you sure?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="container-fluid">
+                        <div id="delMessage"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    var delModal = document.getElementById('deleteVerify');
+
+    var delButton = delModal.getElementsByClassName("modal-footer")[0].children[0];
+
+    delButton.addEventListener('click', function(e) {
+        let uid = delButton.id;
+
+        {{!-- var req = new XMLHttpRequest();
+
+        req.open('DELETE', '/api/char?id=' + params[0]); --}}
+        console.log("Click! " + uid);
+    });
+
+    delModal.addEventListener('show.bs.modal', function(event) {
+        let params = event.relatedTarget.id.split('_');
+
+        delButton.setAttribute('id', params[0]);
+
+        var message = document.createElement('h3');
+        message.innerText = 'You are about to delete ' + params[1] + ' from the database!';
+
+        document.getElementById('delMessage').append(message);
+    });
+
+    delModal.addEventListener('hidden.bs.modal', function (event) {
+        delButton.setAttribute('id', '');
+        document.getElementById('delMessage').firstChild.remove();
+    });
+</script>
