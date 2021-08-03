@@ -41,6 +41,59 @@
         </table>
     </div>
 
+    <div class="offcanvas offcanvas-top h-50" tabindex="-1" id="editRow" aria-labelledby="editRowLabel">
+        <div class="offcanvas-header">
+            <h3 class="offcanvas-title" id="editRowLabel">Edit Character</h3>
+        </div>
+        <div class="offcanvas-body">
+            <div id="editRowForm">
+                <form>
+                    <div class="row mb-3 justify-content-left">
+                        <div class="col-2">
+                            <input type="text" class="form-control" placeholder="First name" id="charFirst" aria-label="First name" required aria-required="true">
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" placeholder="Last name" id="charLast"  aria-label="Last name" required aria-required="true">
+                        </div>
+                    </div>
+                    <div class="row mb-3 justify-content-left">
+                        <div class="col-2">
+                            <input type="text" class="form-control" placeholder="Life Stage" id="lifeStage" aria-label="Life stage">
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" placeholder="Region" id="region" aria-label="Region" required aria-required="true">
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" placeholder="Specialty" id="specialty" aria-label="Specialty">
+                        </div>
+                    </div>
+                    <div class="row mb-3 justify-content-left">
+                        <div class="col-3">
+                            <label for="toolSelect" class="form-label">Tools:</label>
+                            <select class="form-select" multiple size="5" aria-label="multipe select tools" id="toolSelect">
+
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <label for="equipSelect" class="form-label">Equipment:</label>
+                            <select class="form-select" multiple size="5" aria-label="multipe select equipment" id="equipSelect">
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row justify-content-left">
+                        <div class="col-4">
+                            <button type="submit" id="submitChar" class="btn btn-primary">Edit Character</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="clearfix">
+                <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="offcanvas" data-bs-target="editRow" aria-label="Cancel">Cancel</a> 
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="toolCheck" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="toolCheck" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -247,5 +300,68 @@
     delModal.addEventListener('hidden.bs.modal', function (event) {
         delButton.setAttribute('id', '');
         document.getElementById('delMessage').firstChild.remove();
+    });
+
+    var editOffcanvas = document.getElementById('editRow');
+
+    editOffcanvas.addEventListener('show.bs.offcanvas', function(event) {
+
+        let row = event.relatedTarget.parentNode.parentNode;
+        let toolSelect = document.getElementById('toolSelect');
+        let equipSelect = document.getElementById('equipSelect');
+        var req = new XMLHttpRequest();
+
+        req.open("GET", '/api/tool');
+        req.setRequestHeader('Accept', 'application/json; charset=utf-8');
+        req.send(null);
+
+        req.addEventListener('load', function(event) {
+            let tool = JSON.parse(req.responseText);
+
+            tool.tools.forEach(t => {
+                let toolOpt = document.createElement('option');
+
+                toolOpt.value = t.toolId;
+                toolOpt.innerText = t.toolName;
+
+                {{!-- if (t.toolName == row.children[5].innerText) toolOpt.selected = true; --}}
+
+                toolSelect.add(toolOpt, null);
+            });
+        });
+
+        var req2 = new XMLHttpRequest();
+
+        req2.open("GET", '/api/equip');
+        req2.setRequestHeader('Accept', 'application/json; charset=utf-8');
+        req2.send(null);
+
+        req2.addEventListener('load', function(event) {
+            let equip = JSON.parse(req2.responseText);
+
+            equip.equips.forEach(c => {
+                let equipOpt = document.createElement('option');
+
+                equipOpt.value = c.equipId;
+                equipOpt.innerText = c.equipName;
+
+                {{!-- if (c.equipName == row.children[5].innerText) equipOpt.selected = true; --}}
+
+                equipSelect.add(equipOpt, null);
+            });
+        });
+
+        let fname = document.getElementById('charFirst');
+        let lname = document.getElementById('charLast');
+        let stage = document.getElementById('lifeStage');
+        let region = document.getElementById('region');
+        let spec = document.getElementById('specialty');
+
+        fname.value = row.children[0].innerText;
+        lname.value = row.children[1].innerText;
+        stage.value = row.children[2].innerText;
+        region.value = row.children[3].innerText;
+        spec.value = row.children[4].innerText;
+
     });
 </script>

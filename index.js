@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 
 app.get('/', function(req, res, next) {
     res.status(200);
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
     res.render('home', {active: {'home': true}});
 })
 .get('/chars', function(req, res, next) {
@@ -50,14 +50,14 @@ app.get('/', function(req, res, next) {
         function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
             res.status(200);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.render('characters', {active: {'chars': true}, rows: result});
         }
     );
 })
 .get('/chars/add', function(req, res, next) {
     res.status(200);
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
     res.render('addChar', {active: {'chars': true}})
 })
 .get('/equip', function(req, res, next) {
@@ -65,7 +65,7 @@ app.get('/', function(req, res, next) {
     JOIN enchants ON `equips`.enchantID = `enchants`.enchantId",
         function (error, result, fields) {
             res.status(200);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.render('equip', {active: {'equip': true}, rows: result});
         }
     )
@@ -73,7 +73,7 @@ app.get('/', function(req, res, next) {
 })
 .get('/equip/add', function(req, res, next) {
     res.status(200);
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
     res.render('addEquip', {active: {'equip': true}})
 })
 .get('/tools', function(req, res, next) {
@@ -81,7 +81,7 @@ app.get('/', function(req, res, next) {
     JOIN enchants ON `tools`.toolEnchant = `enchants`.enchantId",
         function (error, result, fields) {
             res.status(200);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.render('tools', {active: {'tools': true}, rows: result});
         }
     )
@@ -89,14 +89,14 @@ app.get('/', function(req, res, next) {
 })
 .get('/tool/add', function(req, res, next) {
     res.status(200);
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
     res.render('addTool', {active: {'tools': true}})
 })
 .get('/enchants', function(req, res, next) {
     mysql.pool.query("SELECT * FROM `enchants`",
         function (error, result, fields) {
             res.status(200);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.render('enchants', {active: {'enchants': true}, rows: result});
         }
     )
@@ -104,7 +104,7 @@ app.get('/', function(req, res, next) {
 })
 .get('/enchant/add', function(req, res, next) {
     res.status(200);
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
     res.render('addEnchant', {active: {'enchants': true}})
 })
 ;
@@ -114,33 +114,62 @@ app.get('/api/:base', function(req, res, next) {
     var base = req.params.base;
 
     if (base == "tool") {
-        mysql.pool.query("SELECT toolName,type,material,level,`enchants`.enchantName AS enchantName FROM tools \
-        JOIN charTools ON charTools.toolID = tools.toolId \
-        JOIN characters ON charTools.charaID = characters.charaId \
-        JOIN enchants ON tools.toolEnchant = enchants.enchantId \
-        WHERE characters.charaId = ?", [id], function (error, result, fields) {
-            if (error) console.warn(error.sqlMessage);
+        if (id != null) {
+            mysql.pool.query("SELECT toolName,type,material,level,`enchants`.enchantName AS enchantName FROM tools \
+            JOIN charTools ON charTools.toolID = tools.toolId \
+            JOIN characters ON charTools.charaID = characters.charaId \
+            JOIN enchants ON tools.toolEnchant = enchants.enchantId \
+            WHERE characters.charaId = ?", [id], function (error, result, fields) {
+                if (error) console.warn(error.sqlMessage);
 
-            res.status(200);
-            res.setHeader('Cache-Control', 'no-cache');
-            res.setHeader('Content-Type', 'application/json');
-            res.send({rows: result});
-        });
+                res.status(200);
+                res.setHeader('Cache-Control', 'no-cache, no-store');
+                res.setHeader('Content-Type', 'application/json');
+                res.send({rows: result});
+            });
+        } else {
+            mysql.pool.query("SELECT toolId,toolName FROM tools", function(error, result, fields) {
+                if (error) console.warn(error.sqlMessage);
+
+                res.status(200);
+                res.setHeader('Cache-Control', 'no-cache, no-store');
+                res.setHeader('Content-Type', 'application/json');
+                res.send({tools: result});
+            });
+        }
     } else if (base == "equip") {
-        mysql.pool.query("SELECT equipName,location,weight,material,level,`enchants`.enchantName AS enchantName FROM equips \
-        JOIN charEquip ON charEquip.equipID = equips.equipId \
-        JOIN characters ON charEquip.charaID = characters.charaId \
-        JOIN enchants ON equips.enchantID = enchants.enchantId \
-        WHERE characters.charaId = ?", [id], function (error, result, fields) {
+        if (id != null) {
+            mysql.pool.query("SELECT equipName,location,weight,material,level,`enchants`.enchantName AS enchantName FROM equips \
+            JOIN charEquip ON charEquip.equipID = equips.equipId \
+            JOIN characters ON charEquip.charaID = characters.charaId \
+            JOIN enchants ON equips.enchantID = enchants.enchantId \
+            WHERE characters.charaId = ?", [id], function (error, result, fields) {
+                if (error) console.warn(error.sqlMessage);
+
+                res.status(200);
+                res.setHeader('Cache-Control', 'no-cache, no-store');
+                res.setHeader('Content-Type', 'application/json');
+                res.send({rows: result});
+            });
+        } else {
+            mysql.pool.query("SELECT equipId,equipName FROM equips", function(error, result, fields) {
+                if (error) console.warn(error.sqlMessage);
+
+                res.status(200);
+                res.setHeader('Cache-Control', 'no-cache, no-store');
+                res.setHeader('Content-Type', 'application/json');
+                res.send({equips: result});
+            });
+        }
+    } else if (base == "enchant") {
+        mysql.pool.query("SELECT enchantId,enchantName FROM enchants", function(error, result, fields) {
             if (error) console.warn(error.sqlMessage);
 
             res.status(200);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.setHeader('Content-Type', 'application/json');
-            res.send({rows: result});
+            res.send({enchants: result});
         });
-    } else {
-        console.warn("No id " + id);
     }
 })
 .post('/api/:base', function(req, res, next) {
@@ -157,7 +186,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.send(null);
         });
     } else if (base == 'tool') {
@@ -171,7 +200,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.send(null);
         });
     } else if (base == 'equip') {
@@ -185,7 +214,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.send(null);
         });
     } else if (base == 'enchant') {
@@ -199,7 +228,7 @@ app.get('/api/:base', function(req, res, next) {
                 res.send(null);
             }
             res.status(201);
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.send(null);
         });
     }

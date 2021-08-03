@@ -29,6 +29,42 @@
         </table>
     </div>
 
+    <div class="offcanvas offcanvas-top" tabindex="-1" id="editRow" aria-labelledby="editRowLabel">
+        <div class="offcanvas-header">
+            <h3 class="offcanvas-title" id="editRowLabel">Edit Enchantment</h3>
+        </div>
+        <div class="offcanvas-body">
+            <div id="editRowForm">
+                <form id="addEnch" class="container-sm needs-validation">
+                    <div class="row mb-3 justify-content-left">
+                        <div class="col-2">
+                            <input type="text" class="form-control" placeholder="Name" id="name" aria-label="Name" required aria-required="true">
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" placeholder="Aura Color" id="aura" aria-label="Aura color" required aria-required="true">
+                        </div>
+                    </div>
+                    <div class="row mb-3 justify-content-left">
+                        <div class="col-2">
+                            <input type="text" class="form-control" placeholder="Strength" id="strength" aria-label="Strength">
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" placeholder="Effect" id="eff" aria-label="Effect">
+                        </div>
+                    </div>
+                    <div class="row justify-content-left">
+                        <div class="col-4">
+                            <button type="submit" id="submitEnchant" class="btn btn-primary">Edit Enchantment</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="clearfix">
+                <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="offcanvas" data-bs-target="editRow" aria-label="Cancel">Cancel</a> 
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="deleteVerify" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="equipCheck" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -78,5 +114,22 @@
     delModal.addEventListener('hidden.bs.modal', function (event) {
         delButton.setAttribute('id', '');
         document.getElementById('delMessage').firstChild.remove();
+    });
+
+    var editOffcanvas = document.getElementById('editRow');
+
+    editOffcanvas.addEventListener('show.bs.offcanvas', function(event) {
+        let name = document.getElementById('name');
+        let aura = document.getElementById('aura');
+        let str = document.getElementById('strength');
+        let eff = document.getElementById('eff');
+
+        let row = event.relatedTarget.parentNode.parentNode;
+
+        name.value = row.children[0].innerText;
+        aura.value = row.children[1].innerText;
+        str.value = row.children[2].innerText;
+        eff.value = row.children[3].innerText;
+
     });
 </script>
