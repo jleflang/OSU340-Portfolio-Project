@@ -60,15 +60,15 @@
         let w = formSubmit.elements['weight'].value;
         let mat = formSubmit.elements['mat'].value;
         let lv = formSubmit.elements['lvl'].value;
-        let eid = formSubmit.elements['enchant'].value;
+        {{!-- let eid = formSubmit.elements['enchant'].value; --}}
 
         var request = {
             'equip': equip, 
-            'type': typ,
+            'loc': loc,
             'weight': w, 
             'mat': mat, 
             'lv': lv, 
-            'eid': eid
+            {{!-- 'eid': eid --}}
         };
 
         req.open('POST', '/api/equip');

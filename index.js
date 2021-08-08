@@ -62,7 +62,7 @@ app.get('/', function(req, res, next) {
 })
 .get('/equip', function(req, res, next) {
     mysql.pool.query("SELECT equipId,equipName,location,weight,material,level,`enchants`.enchantName AS enchantName FROM `equips` \
-    JOIN enchants ON `equips`.enchantID = `enchants`.enchantId",
+    LEFT OUTER JOIN enchants ON `equips`.enchantID = `enchants`.enchantId",
         function (error, result, fields) {
             res.status(200);
             res.setHeader('Cache-Control', 'no-cache, no-store');
@@ -78,7 +78,7 @@ app.get('/', function(req, res, next) {
 })
 .get('/tools', function(req, res, next) {
     mysql.pool.query("SELECT toolId,toolName,`type`,material,level,`enchants`.enchantName AS enchantName FROM `tools` \
-    JOIN enchants ON `tools`.toolEnchant = `enchants`.enchantId",
+    LEFT OUTER JOIN enchants ON `tools`.toolEnchant = `enchants`.enchantId",
         function (error, result, fields) {
             res.status(200);
             res.setHeader('Cache-Control', 'no-cache, no-store');
@@ -181,8 +181,8 @@ app.get('/api/:base', function(req, res, next) {
         [req.body.first, req.body.last, req.body.ls, req.body.region, req.body.special], 
         function(err, result, fields) {
             if (err) {
-                console.warn(err.sqlMessage);
                 res.status(400);
+                console.warn(err.sqlMessage);
                 res.send(null);
             }
             res.status(201);
@@ -195,8 +195,8 @@ app.get('/api/:base', function(req, res, next) {
         [req.body.tool, req.body.type, req.body.mat, req.body.lv], 
         function(err, result, fields) {
             if (err) {
-                console.warn(err.sqlMessage);
                 res.status(400);
+                console.warn(err.sqlMessage);
                 res.send(null);
             }
             res.status(201);
@@ -205,12 +205,12 @@ app.get('/api/:base', function(req, res, next) {
         });
     } else if (base == 'equip') {
         mysql.pool.query("INSERT INTO `equips` \
-        (`equipName`,`type`, `weight`,`material`,`level`) VALUES (?,?,?,?,?)", 
-        [req.body.equip, req.body.type, req.body.weight, req.body.mat, req.body.lv], 
+        (`equipName`,`location`, `weight`,`material`,`level`) VALUES (?,?,?,?,?)", 
+        [req.body.equip, req.body.loc, req.body.weight, req.body.mat, req.body.lv], 
         function(err, result, fields) {
             if (err) {
-                console.warn(err.sqlMessage);
                 res.status(400);
+                console.warn(err.sqlMessage);
                 res.send(null);
             }
             res.status(201);
@@ -223,8 +223,8 @@ app.get('/api/:base', function(req, res, next) {
         [req.body.enchant, req.body.color, req.body.str, req.body.eff], 
         function(err, result, fields) {
             if (err) {
-                console.warn(err.sqlMessage);
                 res.status(400);
+                console.warn(err.sqlMessage);
                 res.send(null);
             }
             res.status(201);

@@ -54,14 +54,14 @@
         let typ = formSubmit.elements['typ'].value;
         let mat = formSubmit.elements['mat'].value;
         let lv = formSubmit.elements['lvl'].value;
-        let eid = formSubmit.elements['enchant'].value;
+        {{!-- let eid = formSubmit.elements['enchant'].value; --}}
 
         var request = {
-            'first': first, 
+            'tool': tool, 
             'type': typ, 
             'mat': mat, 
             'lv': lv, 
-            'eid': eid
+            {{!-- 'eid': eid --}}
         };
 
         req.open('POST', '/api/tool');
