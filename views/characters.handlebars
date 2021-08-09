@@ -372,4 +372,9 @@
         spec.value = row.children[4].innerText;
 
     });
+
+    editOffcanvas.addEventListener("hidden.bs.offcanvas", function(event) {
+        document.getElementById('toolSelect').querySelectorAll('option').forEach(opt => opt.remove());;
+        document.getElementById('equipSelect').querySelectorAll('option').forEach(opt => opt.remove());;
+    });
 </script>
