@@ -70,14 +70,18 @@
                     <div class="row mb-3 justify-content-left">
                         <div class="col-3">
                             <label for="toolSelect" class="form-label">Tools:</label>
-                            <select class="form-select" multiple size="5" aria-label="multipe select tools" id="toolSelect">
-
+                            <select class="form-select" size="5" aria-label="multiple select tools" id="toolSelect" multiple>
+                                {{#each tools}}
+                                    <option value="{{this.toolId}}">{{this.toolName}}</option>
+                                {{/each}}
                             </select>
                         </div>
                         <div class="col-3">
                             <label for="equipSelect" class="form-label">Equipment:</label>
-                            <select class="form-select" multiple size="5" aria-label="multipe select equipment" id="equipSelect">
-
+                            <select class="form-select" size="5" aria-label="multiple select equipment" id="equipSelect" multiple>
+                                {{#each equips}}
+                                    <option value="{{this.equipId}}">{{this.equipName}}</option>
+                                {{/each}}
                             </select>
                         </div>
                     </div>
@@ -317,46 +321,44 @@
         let row = event.relatedTarget.parentNode.parentNode;
         let toolSelect = document.getElementById('toolSelect');
         let equipSelect = document.getElementById('equipSelect');
-        var req = new XMLHttpRequest();
 
-        req.open("GET", '/api/tool');
-        req.setRequestHeader('Accept', 'application/json; charset=utf-8');
-        req.send(null);
+        var prereq = new XMLHttpRequest();
 
-        req.addEventListener('load', function(event) {
-            let tool = JSON.parse(req.responseText);
+        prereq.open('GET', '/api/chars/equips?id=' + event.relatedTarget.id);
+        prereq.setRequestHeader('Accept', 'application/json; charset=utf-8');
+        prereq.send(null);
 
-            tool.tools.forEach(t => {
-                let toolOpt = document.createElement('option');
-
-                toolOpt.value = t.toolId;
-                toolOpt.innerText = t.toolName;
-
-                {{!-- if (t.toolName == row.children[5].innerText) toolOpt.selected = true; --}}
-
-                toolSelect.add(toolOpt, null);
-            });
+        prereq.addEventListener('load', function(e) {
+            try {
+                let pEquips = JSON.parse(prereq.responseText);
+                if (pEquips.equips.length > 0) {
+                    for (const opt in equipSelect.options) {
+                        pEquips.equips.forEach(eq => {
+                            if (equipSelect.options[opt].innerText == eq.equipName) equipSelect.options[opt].selected = true;
+                        });
+                    }
+                }
+            } catch(err) { }  
         });
 
-        var req2 = new XMLHttpRequest();
+         var prereq2 = new XMLHttpRequest();
 
-        req2.open("GET", '/api/equip');
-        req2.setRequestHeader('Accept', 'application/json; charset=utf-8');
-        req2.send(null);
+        prereq2.open('GET', '/api/chars/tools?id=' + event.relatedTarget.id);
+        prereq2.setRequestHeader('Accept', 'application/json; charset=utf-8');
+        prereq2.send(null);
 
-        req2.addEventListener('load', function(event) {
-            let equip = JSON.parse(req2.responseText);
-
-            equip.equips.forEach(c => {
-                let equipOpt = document.createElement('option');
-
-                equipOpt.value = c.equipId;
-                equipOpt.innerText = c.equipName;
-
-                {{!-- if (c.equipName == row.children[5].innerText) equipOpt.selected = true; --}}
-
-                equipSelect.add(equipOpt, null);
-            });
+        prereq2.addEventListener('load', function(e) {
+            try {
+                let pTools = JSON.parse(prereq2.responseText);
+                if (pTools.tools.length > 0) {
+                    for (const opt in toolSelect.options) {
+                        pTools.tools.forEach(tq => {
+                            if (toolSelect.options[opt].innerText == tq.toolName) toolSelect.options[opt].selected = true;
+                        });
+                    }
+                   
+                }
+            } catch(err) { }
         });
 
         let fname = document.getElementById('charFirst');
@@ -374,7 +376,15 @@
     });
 
     editOffcanvas.addEventListener("hidden.bs.offcanvas", function(event) {
-        document.getElementById('toolSelect').querySelectorAll('option').forEach(opt => opt.remove());;
-        document.getElementById('equipSelect').querySelectorAll('option').forEach(opt => opt.remove());;
+        let toolSelect = document.getElementById('toolSelect');
+        let equipSelect = document.getElementById('equipSelect');
+
+        for (const opt in toolSelect.options) {
+            if (toolSelect.options[opt].selected == true) toolSelect.options[opt].selected = false;
+        }
+
+        for (const opt in equipSelect.options) {
+            if (equipSelect.options[opt].selected == true) equipSelect.options[opt].selected = false;
+        }
     });
 </script>

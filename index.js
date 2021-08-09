@@ -9,15 +9,17 @@ var app = express();
 
 app.use(helmet({
     contentSecurityPolicy: {
-        useDefaults: true,
         directives: {
+            "default-src": ["'self'"],
             "frame-ancestors": ["'self'"],
             "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
             "style-src": ["'self'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
-            "font-src": ["'self'", "*.gstatic.com"]
+            "font-src": ["'self'", "*.gstatic.com"],
+            "img-src": ["'self'", "data:"]
         }
     },
-    framegaurd: false
+    hsts: false,
+    expectCt: false,
 }));
 
 app.engine('handlebars', handlebars.engine);
@@ -46,12 +48,14 @@ app.get('/', function(req, res, next) {
     res.render('home', {active: {'home': true}});
 })
 .get('/chars', function(req, res, next) {
-    mysql.pool.query("SELECT * FROM `characters`", 
+    mysql.pool.query("SELECT charaId,firstName,lastName,lifeStage,region,specialty,available FROM `characters`;\
+    SELECT equipId,equipName FROM `equips`;\
+    SELECT toolId,toolName FROM `tools`", 
         function (error, result, fields) {
             if (error) console.warn(error.sqlMessage);
             res.status(200);
             res.setHeader('Cache-Control', 'no-cache, no-store');
-            res.render('characters', {active: {'chars': true}, rows: result});
+            res.render('characters', {active: {'chars': true}, rows: result[0], equips: result[1], tools: result[2]});
         }
     );
 })
@@ -118,7 +122,7 @@ app.get('/api/:base', function(req, res) {
             mysql.pool.query("SELECT toolName,type,material,level,`enchants`.enchantName AS enchantName FROM tools \
             JOIN charTools ON charTools.toolID = tools.toolId \
             JOIN characters ON charTools.charaID = characters.charaId \
-            JOIN enchants ON tools.toolEnchant = enchants.enchantId \
+            LEFT OUTER JOIN enchants ON tools.toolEnchant = enchants.enchantId \
             WHERE characters.charaId = ?", [id], function (error, result, fields) {
                 if (error) console.warn(error.sqlMessage);
 
@@ -142,7 +146,7 @@ app.get('/api/:base', function(req, res) {
             mysql.pool.query("SELECT equipName,location,weight,material,level,`enchants`.enchantName AS enchantName FROM equips \
             JOIN charEquip ON charEquip.equipID = equips.equipId \
             JOIN characters ON charEquip.charaID = characters.charaId \
-            JOIN enchants ON equips.enchantID = enchants.enchantId \
+            LEFT OUTER JOIN enchants ON equips.enchantID = enchants.enchantId \
             WHERE characters.charaId = ?", [id], function (error, result, fields) {
                 if (error) console.warn(error.sqlMessage);
 
@@ -172,6 +176,52 @@ app.get('/api/:base', function(req, res) {
         });
     } else {
         console.error("Unknown Base: " + base);
+    }
+})
+.get('/api/:base/:item', function(req, res) {
+    if (req.params.base != 'chars') {
+        res.status(404);
+        res.send(null);
+        console.log("Nope!");
+    }
+
+    if (req.params.item == 'equips') {
+        mysql.pool.query("SELECT equipName FROM equips \
+        JOIN charEquip ON charEquip.equipID = equips.equipId \
+        JOIN characters ON charEquip.charaID = characters.charaId \
+        WHERE `characters`.charaId = (?)", [req.query['id']], 
+        function(err, result, fields) {
+            if (err) {
+                res.status(400);
+                console.warn(err.sqlMessage);
+                res.send(null);
+            }
+
+            res.status(200);
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.setHeader('Content-Type', 'application/json');
+            res.send({'equips': result});
+        });
+    } else if (req.params.item == 'tools') {
+        mysql.pool.query("SELECT toolName FROM tools \
+        JOIN charTools ON charTools.toolID = tools.toolId \
+        JOIN characters ON charTools.charaID = characters.charaId \
+        WHERE `characters`.charaId = (?)", [req.query['id']], 
+        function(err, result, fields) {
+            if (err) {
+                res.status(400);
+                console.warn(err.sqlMessage);
+                res.send(null);
+            }
+
+            res.status(200);
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.setHeader('Content-Type', 'application/json');
+            res.send({'tools': result});
+        });
+    } else {
+        res.status(404);
+        res.send(null);
     }
 })
 .post('/api/:base', function(req, res) {
