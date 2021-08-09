@@ -94,10 +94,18 @@
     delButton.addEventListener('click', function(e) {
         let uid = delButton.id;
 
-        {{!-- var req = new XMLHttpRequest();
+        var req = new XMLHttpRequest();
 
-        req.open('DELETE', '/api/char?id=' + params[0]); --}}
-        console.log("Click! " + uid);
+        req.open('DELETE', '/api/enchant?id=' + uid);
+        req.send(null);
+
+        req.onload = function(event) {
+            if (req.status == 200) {
+                window.location.reload();
+            } else {
+                window.alert("Failed to Delete!");
+            }
+        };
     });
 
     delModal.addEventListener('show.bs.modal', function(event) {

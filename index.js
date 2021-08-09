@@ -109,7 +109,7 @@ app.get('/', function(req, res, next) {
 })
 ;
 
-app.get('/api/:base', function(req, res, next) {
+app.get('/api/:base', function(req, res) {
     var id = req.query['id'];
     var base = req.params.base;
 
@@ -170,9 +170,11 @@ app.get('/api/:base', function(req, res, next) {
             res.setHeader('Content-Type', 'application/json');
             res.send({enchants: result});
         });
+    } else {
+        console.error("Unknown Base: " + base);
     }
 })
-.post('/api/:base', function(req, res, next) {
+.post('/api/:base', function(req, res) {
     var base = req.params.base;
 
     if (base == 'chars') {
@@ -231,8 +233,69 @@ app.get('/api/:base', function(req, res, next) {
             res.setHeader('Cache-Control', 'no-cache, no-store');
             res.send(null);
         });
+    } else {
+        console.error("Unknown Base: " + base);
     }
 
+})
+.delete("/api/:base", function (req, res) {
+    var base = req.params.base;
+
+    if (base == 'char') {
+        mysql.pool.query("DELETE FROM `characters` WHERE charaId = (?)", 
+        [req.query.id], 
+        function(err, result, fields) {
+            if (err) {
+                res.status(400);
+                console.warn(err.sqlMessage);
+                res.send(null);
+            }
+            res.status(200);
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.send(null);
+        });
+    } else if (base == 'tool') {
+        mysql.pool.query("DELETE FROM `tools` WHERE toolId = (?)", 
+        [req.params.id],
+        function (err, result, fields) {
+            if (err) {
+                res.status(400);
+                console.warn(err.sqlMessage);
+                res.send(null);
+            }
+            res.status(200);
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.send(null);
+        });
+    } else if (base == 'equip') {
+        mysql.pool.query("DELETE FROM `equips` WHERE equipId = (?)", 
+        [req.params.id],
+        function (err, result, fields) {
+            if (err) {
+                res.status(400);
+                console.warn(err.sqlMessage);
+                res.send(null);
+            }
+            res.status(200);
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.send(null);
+        });
+    } else if (base == 'enchant') {
+        mysql.pool.query("DELETE FROM `enchants` WHERE enchantId = (?)", 
+        [req.params.id],
+        function (err, result, fields) {
+            if (err) {
+                res.status(400);
+                console.warn(err.sqlMessage);
+                res.send(null);
+            }
+            res.status(200);
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.send(null);
+        });
+    } else {
+        console.error("Unknown Base: " + base);
+    }
 });
 
 app.use(function(req, res) {
