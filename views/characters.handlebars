@@ -85,6 +85,12 @@
                             </select>
                         </div>
                     </div>
+                    <div class="row mb-3 justify-content-left">
+                        <div class="col-4">
+                            <input class="form-check-input" type="checkbox" value="1" id="availCheck">
+                            <label for="availCheck" class="form-check-label">Available</label>
+                        </div>
+                    </div>
                     <div class="row justify-content-left">
                         <div class="col-4">
                             <button type="submit" id="submitChar" class="btn btn-primary">Edit Character</button>
@@ -366,12 +372,15 @@
         let stage = document.getElementById('lifeStage');
         let region = document.getElementById('region');
         let spec = document.getElementById('specialty');
+        let availCheck = document.getElementById('availCheck');
 
         fname.value = row.children[0].innerText;
         lname.value = row.children[1].innerText;
         stage.value = row.children[2].innerText;
         region.value = row.children[3].innerText;
         spec.value = row.children[4].innerText;
+
+        if (row.children[7].innerText == "Yes") availCheck.checked = true;
 
     });
 
