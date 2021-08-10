@@ -280,8 +280,6 @@ app.get('/api/:base', function(req, res) {
                         }
                     }
 
-                    console.log(addQ);
-
                     if (addQ.length > 0) {
 
                         addQ = addQ.slice(0, -1);
@@ -292,8 +290,6 @@ app.get('/api/:base', function(req, res) {
                                   throw er;
                                 });
                             }
-
-                            console.log(JSON.stringify(re));
 
                             con.commit(function(err) {
                                 if (err) {
