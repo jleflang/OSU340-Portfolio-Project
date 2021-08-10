@@ -385,6 +385,9 @@
     });
 
     editOffcanvas.addEventListener("hidden.bs.offcanvas", function(event) {
+
+        document.getElementById('availCheck').checked = false;
+
         let toolSelect = document.getElementById('toolSelect');
         let equipSelect = document.getElementById('equipSelect');
 
