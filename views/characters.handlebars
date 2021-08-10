@@ -206,10 +206,8 @@
 
         req.addEventListener('load', function(e) {
             if (req.status == 200) {
-                console.log("Worked");
                 window.location.reload();
             } else {
-                console.warn("Did not work");
                 alert("Failed");
             }
         });

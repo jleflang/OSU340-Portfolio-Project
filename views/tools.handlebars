@@ -55,7 +55,12 @@
                         </div>
                         <div class="col-3">
                             <label for="enchantSelect" class="form-label">Enchantment:</label>
-                            <select class="form-select" aria-label="Select Enchantment" id="enchantSelect"></select>
+                            <select class="form-select" aria-label="Select Enchantment" id="enchantSelect">
+                                <option value="" selected>----</option>
+                                {{#each ench}}
+                                    <option value="{{this.enchantId}}">{{this.enchantName}}</option>
+                                {{/each}}
+                            </select>
                         </div>
                     </div>
                     <div class="row justify-content-left">
@@ -93,6 +98,47 @@
 </div>
 
 <script>
+
+    var editForm = document.getElementById('addTool');
+
+    editForm.addEventListener('submit', function(event) {
+
+        event.preventDefault();
+
+        let enchantSelect = document.getElementById('enchantSelect');
+
+        let name = editForm[0].value;
+        let type = editForm[1].value;
+        let mat = editForm[2].value;
+        let lvl = editForm[3].value;
+
+        let enchant = (enchantSelect.options[enchantSelect.selectedIndex].value != "") ? 
+            enchantSelect.options[enchantSelect.selectedIndex].value : null;
+
+        var body = {
+            'name': name,
+            'type': type,
+            'mat': mat,
+            'lvl': lvl,
+            'enchant': enchant
+        };
+
+        var req = new XMLHttpRequest();
+
+        req.open("PUT", "/api/tools");
+        req.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        req.send(JSON.stringify(body));
+
+        req.addEventListener('load', function(e) {
+            if (req.status == 200) {
+                window.location.reload();
+            } else {
+                alert("Failed");
+            }
+        });
+
+    });
+
     var delModal = document.getElementById('deleteVerify');
 
     var delButton = delModal.getElementsByClassName("modal-footer")[0].children[0];
@@ -138,23 +184,22 @@
         let enchantSelect = document.getElementById('enchantSelect');
         var req = new XMLHttpRequest();
 
-        req.open("GET", '/api/enchant');
+        req.open('GET', '/api/tool/enchants?id=' + event.relatedTarget.id);
         req.setRequestHeader('Accept', 'application/json; charset=utf-8');
         req.send(null);
 
-        req.addEventListener('load', function(event) {
-            let enchantment = JSON.parse(req.responseText);
-
-            enchantment.enchants.forEach(enchant => {
-                let enchantOpt = document.createElement('option');
-
-                enchantOpt.value = enchant.enchantId;
-                enchantOpt.innerText = enchant.enchantName;
-
-                if (enchant.enchantName == row.children[5].innerText) enchantOpt.selected = true;
-
-                enchantSelect.add(enchantOpt, null);
-            });
+        req.addEventListener('load', function(e) {
+            try {
+                let p = JSON.parse(req.responseText);
+                if (p.tools.length == 1) {
+                    for (const opt in enchantSelect.options) {
+                        if (enchantSelect.options[opt].value == p.tools[0].enchantId) {
+                            enchantSelect.options[opt].selected = true;
+                            break;
+                        }
+                    }
+                }
+            } catch(err) { }
         });
 
         let name = document.getElementById('name');
@@ -167,5 +212,12 @@
         mat.value = row.children[3].innerText;
         lvl.value = row.children[4].innerText;
 
+    });
+
+    editOffcanvas.addEventListener("hidden.bs.offcanvas", function(event) {
+
+        let enchantSelect = document.getElementById('enchantSelect');
+        enchantSelect.options[0].selected = true;
+        
     });
 </script>

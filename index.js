@@ -66,11 +66,12 @@ app.get('/', function(req, res, next) {
 })
 .get('/equip', function(req, res, next) {
     mysql.pool.query("SELECT equipId,equipName,location,weight,material,level,`enchants`.enchantName AS enchantName FROM `equips` \
-    LEFT OUTER JOIN enchants ON `equips`.enchantID = `enchants`.enchantId",
+    LEFT OUTER JOIN enchants ON `equips`.enchantID = `enchants`.enchantId;\
+    SELECT enchantId,enchantName FROM `enchants`",
         function (error, result, fields) {
             res.status(200);
             res.setHeader('Cache-Control', 'no-cache, no-store');
-            res.render('equip', {active: {'equip': true}, rows: result});
+            res.render('equip', {active: {'equip': true}, rows: result[0], ench: result[1]});
         }
     )
     
@@ -82,11 +83,12 @@ app.get('/', function(req, res, next) {
 })
 .get('/tools', function(req, res, next) {
     mysql.pool.query("SELECT toolId,toolName,`type`,material,level,`enchants`.enchantName AS enchantName FROM `tools` \
-    LEFT OUTER JOIN enchants ON `tools`.toolEnchant = `enchants`.enchantId",
+    LEFT OUTER JOIN enchants ON `tools`.toolEnchant = `enchants`.enchantId; \
+    SELECT enchantId,enchantName FROM `enchants`",
         function (error, result, fields) {
             res.status(200);
             res.setHeader('Cache-Control', 'no-cache, no-store');
-            res.render('tools', {active: {'tools': true}, rows: result});
+            res.render('tools', {active: {'tools': true}, rows: result[0], ench: result[1]});
         }
     )
     
@@ -179,18 +181,50 @@ app.get('/api/:base', function(req, res) {
     }
 })
 .get('/api/:base/:item', function(req, res) {
-    if (req.params.base != 'chars') {
-        res.status(404);
-        res.send(null);
-        console.log("Nope!");
-    }
+    if (req.params.base == 'chars') {
 
-    if (req.params.item == 'equips') {
-        mysql.pool.query("SELECT equipName FROM equips \
-        JOIN charEquip ON charEquip.equipID = equips.equipId \
-        JOIN characters ON charEquip.charaID = characters.charaId \
-        WHERE `characters`.charaId = (?)", [req.query['id']], 
-        function(err, result, fields) {
+        if (req.params.item == 'equips') {
+            mysql.pool.query("SELECT equipName FROM equips \
+            JOIN charEquip ON charEquip.equipID = equips.equipId \
+            JOIN characters ON charEquip.charaID = characters.charaId \
+            WHERE `characters`.charaId = (?)", [req.query['id']], 
+            function(err, result, fields) {
+                if (err) {
+                    res.status(400);
+                    console.warn(err.sqlMessage);
+                    res.send(null);
+                }
+
+                res.status(200);
+                res.setHeader('Cache-Control', 'no-cache, no-store');
+                res.setHeader('Content-Type', 'application/json');
+                res.send({'equips': result});
+            });
+        } else if (req.params.item == 'tools') {
+            mysql.pool.query("SELECT toolName FROM tools \
+            JOIN charTools ON charTools.toolID = tools.toolId \
+            JOIN characters ON charTools.charaID = characters.charaId \
+            WHERE `characters`.charaId = (?)", [req.query['id']], 
+            function(err, result, fields) {
+                if (err) {
+                    res.status(400);
+                    console.warn(err.sqlMessage);
+                    res.send(null);
+                }
+
+                res.status(200);
+                res.setHeader('Cache-Control', 'no-cache, no-store');
+                res.setHeader('Content-Type', 'application/json');
+                res.send({'tools': result});
+            });
+        } else {
+            res.status(404);
+            res.send(null);
+        }
+    } else if ((req.params.base == 'equip') && (req.params.item == 'enchants')) {
+        mysql.pool.query("SELECT `enchants`.enchantId,enchantName FROM `enchants` \
+        JOIN equips ON `equips`.enchantID = `enchants`.enchantId \
+        WHERE `equips`.equipId = ?", [req.query['id']], function(err, result, fields) {
             if (err) {
                 res.status(400);
                 console.warn(err.sqlMessage);
@@ -200,14 +234,12 @@ app.get('/api/:base', function(req, res) {
             res.status(200);
             res.setHeader('Cache-Control', 'no-cache, no-store');
             res.setHeader('Content-Type', 'application/json');
-            res.send({'equips': result});
+            res.send({'enchants': result});
         });
-    } else if (req.params.item == 'tools') {
-        mysql.pool.query("SELECT toolName FROM tools \
-        JOIN charTools ON charTools.toolID = tools.toolId \
-        JOIN characters ON charTools.charaID = characters.charaId \
-        WHERE `characters`.charaId = (?)", [req.query['id']], 
-        function(err, result, fields) {
+    } else if ((req.params.base == 'tool') && (req.params.item == 'enchants')) {
+        mysql.pool.query("SELECT `enchants`.enchantId,enchantName FROM `enchants` \
+        JOIN tools ON `tools`.toolEnchant = `enchants`.enchantId \
+        WHERE `tools`.toolId = ?", [req.query['id']], function(err, result, fields) {
             if (err) {
                 res.status(400);
                 console.warn(err.sqlMessage);
@@ -219,10 +251,8 @@ app.get('/api/:base', function(req, res) {
             res.setHeader('Content-Type', 'application/json');
             res.send({'tools': result});
         });
-    } else {
-        res.status(404);
-        res.send(null);
     }
+
 })
 .put('/api/:base', function(req, res) {
     var base = req.params.base;
@@ -369,6 +399,17 @@ app.get('/api/:base', function(req, res) {
         res.status(200);
         res.send(null);
 
+    } else if (base == 'tools') {
+        mysql.pool.query("UPDATE `tools` SET \
+        `toolName` = ?, `type` = ?, `material` = ?, `level` = ?, `toolEnchant` = ? \
+        WHERE toolId = (SELECT toolId FROM `tools` WHERE toolName = ?)",
+        [req.body.name,req.body.type,req.body.mat,req.body.lvl,req.body.enchant,req.body.name], 
+        function (err, result, fields) {
+
+            res.status(200);
+            res.send(null);
+            
+        });
     } else {
         console.error("Nope");
     }
