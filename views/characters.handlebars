@@ -47,30 +47,30 @@
         </div>
         <div class="offcanvas-body">
             <div id="editRowForm">
-                <form>
+                <form id="editChar" name="char">
                     <div class="row mb-3 justify-content-left">
                         <div class="col-2">
-                            <input type="text" class="form-control" placeholder="First name" id="charFirst" aria-label="First name" required aria-required="true">
+                            <input type="text" class="form-control" placeholder="First name" id="charFirst" name="fname" aria-label="First name" required aria-required="true">
                         </div>
                         <div class="col-2">
-                            <input type="text" class="form-control" placeholder="Last name" id="charLast"  aria-label="Last name" required aria-required="true">
+                            <input type="text" class="form-control" placeholder="Last name" id="charLast" name="lname" aria-label="Last name" required aria-required="true">
                         </div>
                     </div>
                     <div class="row mb-3 justify-content-left">
                         <div class="col-2">
-                            <input type="text" class="form-control" placeholder="Life Stage" id="lifeStage" aria-label="Life stage">
+                            <input type="text" class="form-control" placeholder="Life Stage" id="lifeStage" name="lstage" aria-label="Life stage">
                         </div>
                         <div class="col-3">
-                            <input type="text" class="form-control" placeholder="Region" id="region" aria-label="Region" required aria-required="true">
+                            <input type="text" class="form-control" placeholder="Region" id="region" name="reg" aria-label="Region" required aria-required="true">
                         </div>
                         <div class="col-3">
-                            <input type="text" class="form-control" placeholder="Specialty" id="specialty" aria-label="Specialty">
+                            <input type="text" class="form-control" placeholder="Specialty" id="specialty" name="sp" aria-label="Specialty">
                         </div>
                     </div>
                     <div class="row mb-3 justify-content-left">
                         <div class="col-3">
                             <label for="toolSelect" class="form-label">Tools:</label>
-                            <select class="form-select" size="5" aria-label="multiple select tools" id="toolSelect" multiple>
+                            <select class="form-select" size="5" aria-label="multiple select tools" id="toolSelect" name="tools" multiple>
                                 {{#each tools}}
                                     <option value="{{this.toolId}}">{{this.toolName}}</option>
                                 {{/each}}
@@ -78,7 +78,7 @@
                         </div>
                         <div class="col-3">
                             <label for="equipSelect" class="form-label">Equipment:</label>
-                            <select class="form-select" size="5" aria-label="multiple select equipment" id="equipSelect" multiple>
+                            <select class="form-select" size="5" aria-label="multiple select equipment" name="equip" id="equipSelect" multiple>
                                 {{#each equips}}
                                     <option value="{{this.equipId}}">{{this.equipName}}</option>
                                 {{/each}}
@@ -87,7 +87,7 @@
                     </div>
                     <div class="row mb-3 justify-content-left">
                         <div class="col-4">
-                            <input class="form-check-input" type="checkbox" value="1" id="availCheck">
+                            <input class="form-check-input" type="checkbox" value="1" id="availCheck" name="avail">
                             <label for="availCheck" class="form-check-label">Available</label>
                         </div>
                     </div>
@@ -160,6 +160,62 @@
 </div>
 
 <script>
+
+    var editForm = document.getElementById('editChar');
+
+    editForm.addEventListener('submit', event => {
+        event.preventDefault();
+
+        let fname = editForm[0].value;
+        let lname = editForm[1].value;
+        let ls = editForm[2].value;
+        let reg = editForm[3].value;
+        let sp = editForm[4].value;
+        let avail = (editForm[7].innerText == "Yes") ? 1 : 0;
+
+        let tools = [];
+        let equip = [];
+
+        let toolSelect = document.getElementById('toolSelect');
+        let equipSelect = document.getElementById('equipSelect');
+
+        for (const opt in toolSelect.options) {
+            if (toolSelect.options[opt].selected == true) tools.push(toolSelect.options[opt].value);
+        }
+
+        for (const opt in equipSelect.options) {
+            if (equipSelect.options[opt].selected == true) equip.push(equipSelect.options[opt].value);
+        }
+
+        var body = {
+            "firstName": fname,
+            "lastName": lname,
+            "lifeStage": ls,
+            "region": reg,
+            "specialty": sp,
+            "tools": tools,
+            "equip": equip,
+            "available": avail
+        };
+
+        var req = new XMLHttpRequest();
+
+        req.open("PUT", "/api/chars");
+        req.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        req.send(JSON.stringify(body));
+
+        req.addEventListener('load', function(e) {
+            if (req.status == 200) {
+                console.log("Worked");
+                window.location.reload();
+            } else {
+                console.warn("Did not work");
+                alert("Failed");
+            }
+        });
+
+    });
+
     var toolModal = document.getElementById('toolCheck');
 
     toolModal.addEventListener('show.bs.modal', function (event) {

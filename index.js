@@ -224,6 +224,159 @@ app.get('/api/:base', function(req, res) {
         res.send(null);
     }
 })
+.put('/api/:base', function(req, res) {
+    var base = req.params.base;
+
+    if (base == 'chars') {
+
+        mysql.pool.getConnection(function(err, con) {
+
+            let tools = req.body.tools;
+            let equip = req.body.equip;
+
+            con.query("UPDATE `characters` SET \
+            `firstName` = ?, `lastName` = ?,`lifeStage` = ?,`region` = ?,`specialty` = ?,`available` = ? WHERE \
+            charaId = (SELECT charaId FROM `characters` WHERE `firstName` = ? AND `lastName` = ?)",
+            [req.body.firstName,req.body.lastName,req.body.lifeStage,req.body.region,req.body.specialty,req.body.available,
+                req.body.firstName,req.body.lastName], 
+            function(err, res, fields) {
+                if (err) {
+                    console.warn(err.sqlMessage);
+                }
+            });
+
+            con.beginTransaction(function(error) {
+                if (error) {throw error;}
+
+                con.query("SELECT toolID FROM charTools WHERE \
+                charaID = (SELECT charaId FROM `characters` WHERE `firstName` = ? AND `lastName` = ?)", 
+                [req.body.firstName, req.body.lastName], function(e, res, fields) {
+                    if (e) {
+                        return con.rollback(function() {
+                          throw e;
+                        });
+                    }
+
+                    let curTool = [];
+                    let addQ = "";
+
+                    for (const t in res) {
+                        curTool.push(res[t].toolID);
+                    }
+
+                    if (curTool.length < tools.length) {
+                        let addTool = tools.filter(t => !curTool.includes(t));
+
+                        for (t in addTool) {
+                            addQ += "INSERT INTO `charTools`(`charaID`,`toolID`) VALUES \
+                            ((SELECT charaId FROM `characters` WHERE `firstName` = \
+                            '" + req.body.firstName + "' AND `lastName` = '" + req.body.lastName + "')," + addTool[t] + ");";
+                        }
+                    } else if (curTool.length > tools.length) {
+                        let addTool = curTool.filter(t => !tools.includes(t));
+
+                        for (t in addTool) {
+                            addQ += "DELETE FROM `charTools` WHERE toolID = " + addTool[t] + ";";
+                        }
+                    }
+
+                    console.log(addQ);
+
+                    if (addQ.length > 0) {
+
+                        addQ = addQ.slice(0, -1);
+
+                        con.query(addQ, function(er, re, f) {
+                            if (er) {
+                                return con.rollback(function() {
+                                  throw er;
+                                });
+                            }
+
+                            console.log(JSON.stringify(re));
+
+                            con.commit(function(err) {
+                                if (err) {
+                                    return connection.rollback(function() {
+                                    throw err;
+                                    });
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+            
+            con.beginTransaction(function(error) {
+                if (error) {throw error;}
+
+                con.query("SELECT equipID FROM charEquip WHERE \
+                charaID = (SELECT charaId FROM `characters` WHERE `firstName` = ? AND `lastName` = ?)", 
+                [req.body.firstName, req.body.lastName], function(e, res, fields) {
+                    if (e) {
+                        return con.rollback(function() {
+                          throw e;
+                        });
+                    }
+
+                    let curE = [];
+                    let addQ = "";
+
+                    for (const t in res) {
+                        curE.push(res[t].equipID);
+                    }
+
+                    if (curE.length < equip.length) {
+                        let addE = equip.filter(t => !curE.includes(t));
+
+                        for (eq in addE) {
+                            addQ += "INSERT INTO `charEquip`(`charaID`,`equipID`) VALUES \
+                            ((SELECT charaId FROM `characters` WHERE `firstName` = \
+                            '" + req.body.firstName + "' AND `lastName` = '" + req.body.lastName + "')," + addE[eq] + ");";
+                        }
+                    } else if (curE.length > equip.length) {
+                        let addE = curE.filter(t => !equips.includes(t));
+
+                        for (eq in addE) {
+                            addQ += "DELETE FROM `charEquip` WHERE equipID = " + addE[eq] + ";";
+                        }
+                    }
+
+                    if (addQ.length > 0) {
+
+                        addQ = addQ.slice(0, -1);
+
+                        con.query(addQ, function(er, re, f) {
+                            if (er) {
+                                return con.rollback(function() {
+                                  throw er;
+                                });
+                            }
+                            con.commit(function(err) {
+                                if (err) {
+                                    return connection.rollback(function() {
+                                    throw err;
+                                    });
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+            
+            con.release();
+
+            if (err) throw err;
+
+        });
+        
+        res.status(200);
+        res.send(null);
+
+    } else {
+        console.error("Nope");
+    }
+})
 .post('/api/:base', function(req, res) {
     var base = req.params.base;
 
