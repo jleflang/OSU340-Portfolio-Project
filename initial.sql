@@ -36,7 +36,7 @@ CREATE TABLE `tools` (
     `toolEnchant` int(11),
     PRIMARY KEY (`toolId`),
     UNIQUE KEY `toolId` (`toolId`),
-    FOREIGN KEY (`toolEnchant`) REFERENCES enchants(`enchantId`)
+    FOREIGN KEY (`toolEnchant`) REFERENCES enchants(`enchantId`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `equips` (
@@ -46,11 +46,10 @@ CREATE TABLE `equips` (
     `weight` varchar(255),
     `material` varchar(255),
     `level` int(11),
-    `equipEnchant` int(11),
     `enchantID` int(11),
     PRIMARY KEY (`equipId`),
     UNIQUE KEY `equipId` (`equipId`),
-    FOREIGN KEY (`enchantId`) REFERENCES enchants(`enchantId`)
+    FOREIGN KEY (`enchantId`) REFERENCES enchants(`enchantId`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE `charEquip` (
@@ -69,29 +68,40 @@ CREATE TABLE `charTools` (
     FOREIGN KEY (`toolID`) REFERENCES tools(`toolId`)
 ) ENGINE=InnoDB;
 
-INSERT INTO `characters` (`firstName`,`lastName`, `region`, `available`) VALUES 
-    ('John', 'Derry', 'Southhampton', 1),
-    ('Mary', "O\'Shea", 'Kent', 1),
-    ('Sean', 'Idleforrth', 'Ipswitch', 1)
+INSERT INTO `characters` (`firstName`,`lastName`, `lifeStage`, `region`, `specialty`, `available`) VALUES 
+    ('John', 'Derry', NULL, 'Southhampton', 'Builder', 1),
+    ('Mary', "O\'Shea", NULL, 'Kent', NULL, 1),
+    ('Sean', 'Idleforrth', 'Old', 'Ipswitch', 'Wizard', 1),
+    ('Joan', 'Watson', NULL, 'Underburrow', NULL, 1),
+    ('Joan', 'Berry', 'Teen', 'Sussex', NULL, 1)
 ;
 
-INSERT INTO `enchants` (`enchantName`, `auraColor`) VALUES
-    ('Burn', 'Red'),
-    ('Light', 'White')
+INSERT INTO `enchants` (`enchantName`, `auraColor`,`strength`,`effect`) VALUES
+    ('Burn', 'Red', 15, 'Damage Over Time'),
+    ('Light', 'White', NULL, 'Blinding'),
+    ('Air Slash', 'Blue', 40, NULL)
 ;
 
 INSERT INTO `tools` (`toolName`,`type`,`material`,`level`, `toolEnchant`) VALUES 
-    ('The Starwrend', 'Construction', 'Unknown', 15, (SELECT `enchantId` FROM `enchants` WHERE `enchantName`='Light'))
+    ('The Starwrend', 'Construction', 'Unknown', 15, (SELECT `enchantId` FROM `enchants` WHERE `enchantName`='Light')),
+    ('Plank', 'Universal', 'Wood', 1, NULL),
+    ('Strange Sphere', '???', '???', NULL, NULL)
 ;
 
-INSERT INTO `equips` (`equipName`, `location`, `weight`, `level`, `enchantID`) VALUES
-    ('Wood Sword', 'Hand', 'Light', '1', (SELECT `enchantId` FROM `enchants` WHERE `enchantName`='Burn'))
+INSERT INTO `equips` (`equipName`, `location`, `weight`, `material`, `level`, `enchantID`) VALUES
+    ('Wood Sword', 'Hand', 'Light', 'Wood', '1', (SELECT `enchantId` FROM `enchants` WHERE `enchantName`='Burn')),
+    ('Chaos Staff', 'Hand', NULL, 'Hollyoak', 10, NULL),
+    ('Wizard Hat', 'Head', NULL, 'Cloth', 2, NULL)
 ;
 
 INSERT INTO `charEquip` (`charaID`,`equipID`) VALUES
-    ((SELECT `charaId` FROM `characters` WHERE `lastName`='Derry' AND `firstName`='John'), (SELECT `equipId` FROM `equips` WHERE `equipName`='Wood Sword'))
+    ((SELECT `charaId` FROM `characters` WHERE `lastName`='Derry' AND `firstName`='John'), (SELECT `equipId` FROM `equips` WHERE `equipName`='Wood Sword')),
+    ((SELECT `charaId` FROM `characters` WHERE `lastName`='Idleforrth' AND `firstName`='Sean'), (SELECT `equipId` FROM `equips` WHERE `equipName`='Chaos Staff')),
+    ((SELECT `charaId` FROM `characters` WHERE `lastName`='Idleforrth' AND `firstName`='Sean'), (SELECT `equipId` FROM `equips` WHERE `equipName`='Wizard Hat'))
 ;
 
 INSERT INTO `charTools` (`charaID`,`toolID`) VALUES
-    ((SELECT `charaId` FROM `characters` WHERE `lastName`="O\'Shea" AND `firstName`='Mary'), (SELECT `toolId` FROM `tools` WHERE `toolName`='The Starwrend'))
+    ((SELECT `charaId` FROM `characters` WHERE `lastName`="O\'Shea" AND `firstName`='Mary'), (SELECT `toolId` FROM `tools` WHERE `toolName`='The Starwrend')),
+    ((SELECT `charaId` FROM `characters` WHERE `lastName`="Watson" AND `firstName`='Joan'), (SELECT `toolId` FROM `tools` WHERE `toolName`='Strange Sphere')),
+    ((SELECT `charaId` FROM `characters` WHERE `lastName`="Watson" AND `firstName`='Joan'), (SELECT `toolId` FROM `tools` WHERE `toolName`='Plank'))
 ;
